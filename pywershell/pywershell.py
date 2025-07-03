@@ -2,18 +2,18 @@ import asyncio
 import re
 import sqlite3
 import subprocess
-import threading
 import time
 import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Any
 
 from async_property import AwaitLoader
 from loguru import logger as log
 from propcache import cached_property
+
 from .debug import get_caller_context
+
 
 def _ident(s: str) -> str:
     s = s.strip().lstrip("-")
@@ -61,7 +61,7 @@ class CMDResult:
             return [result] if not isinstance(result, list) else result
         except json.JSONDecodeError:
             json_objects = []
-            json_matches = re.finditer(r'\{[^{}]*\}', self.flat_str, re.DOTALL)
+            json_matches = re.finditer(r'\{[^{}]*}', self.flat_str, re.DOTALL)
             for match in json_matches:
                 try:
                     obj = json.loads(match.group(0))
@@ -70,6 +70,8 @@ class CMDResult:
                     continue
             return json_objects
 
+
+# noinspection PyUnresolvedReferences
 class PywershellLive(AwaitLoader):
     def __init__(self, path: Path = None, alias: str = None, prefix: str = "", debug: bool = False):
         self.root: Path = Path(__file__).parent or path
@@ -148,7 +150,7 @@ class PywershellLive(AwaitLoader):
 
     @cached_property
     def stream(self):
-        from virtual_machines.pywershell.stream import Stream
+        from .stream import Stream
         return Stream(self)
 
     # @cached_property

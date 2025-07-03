@@ -1,7 +1,5 @@
 import asyncio
-import inspect
 from functools import cached_property
-from pathlib import Path
 
 from async_property import AwaitLoader, async_cached_property
 from loguru import logger as log
@@ -59,13 +57,17 @@ class Distro(AwaitLoader):
 
     async def run(self, cmd: str | list[str], **kwargs) -> CMDResult | None:
         prefix = kwargs.pop("prefix", None)
-        log.debug(f"{self}: Received request:\n  - caller={get_caller_context()}\n  - prefix={prefix}\n  - kwargs={kwargs}\n  - {cmd}")
-        if prefix: prefix = f"{self.util.PREFIX} {prefix}"
-        else: prefix = self.util.PREFIX
+        log.debug(
+            f"{self}: Received request:\n  - caller={get_caller_context()}\n  - prefix={prefix}\n  - kwargs={kwargs}\n  - {cmd}")
+        if prefix:
+            prefix = f"{self.util.PREFIX} {prefix}"
+        else:
+            prefix = self.util.PREFIX
 
         if isinstance(cmd, str): cmd = [cmd]
         cmds = cmd
-        log.debug(f"{self}: Sent request:\n  - receiver={self.pywershell}\n  - prefix={prefix}\n  - kwargs={kwargs}\n  - {cmd}")
+        log.debug(
+            f"{self}: Sent request:\n  - receiver={self.pywershell}\n  - prefix={prefix}\n  - kwargs={kwargs}\n  - {cmd}")
         out = await self.pywershell.run(cmds, prefix=prefix, **kwargs)
         return out
 
@@ -116,24 +118,31 @@ class Pywersl(AwaitLoader):
 
     async def run(self, cmd: str | list, **kwargs) -> CMDResult | None:
         prefix = kwargs.pop("prefix", None)
-        log.debug(f"{self}: Received request:\n  - caller={get_caller_context()}\n  - prefix={prefix}\n  - kwargs={kwargs}\n  - {cmd}")
+        log.debug(
+            f"{self}: Received request:\n  - caller={get_caller_context()}\n  - prefix={prefix}\n  - kwargs={kwargs}\n  - {cmd}")
         cmds = [cmd] if isinstance(cmd, str) else cmd
         full = []
-        if prefix: prefix = f"{prefix} "
-        else: prefix = ""
+        if prefix:
+            prefix = f"{prefix} "
+        else:
+            prefix = ""
         for c in cmds:
             item = f"{prefix}{c}"
             full.append(item)
-        log.debug(f"{self}: Sent request:\n  - receiver={self.distro}\n  - prefix={prefix}\n  - kwargs={kwargs}\n  - {cmd}")
+        log.debug(
+            f"{self}: Sent request:\n  - receiver={self.distro}\n  - prefix={prefix}\n  - kwargs={kwargs}\n  - {cmd}")
         out = await self.distro.run(full, **kwargs)
         return out
 
-#Globally exposed alias
+
+# Globally exposed alias
 pywersl = Pywersl.get("Debian")
+
 
 async def debug():
     py = await Pywersl()
     log.debug(py.version)
+
 
 if __name__ == "__main__":
     asyncio.run(debug())

@@ -4,8 +4,9 @@ import time
 from functools import cached_property
 from typing import Callable
 
-from virtual_machines.pywershell.pywershell import PywershellLive
 from loguru import logger as log
+
+from .pywershell import PywershellLive
 
 
 class Stream:

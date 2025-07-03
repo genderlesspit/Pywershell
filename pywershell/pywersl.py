@@ -68,7 +68,7 @@ class Distro(AwaitLoader):
         cmds = cmd
         log.debug(
             f"{self}: Sent request:\n  - receiver={self.pywershell}\n  - prefix={prefix}\n  - kwargs={kwargs}\n  - {cmd}")
-        out = await self.pywershell.run(cmds, prefix=prefix, **kwargs)
+        out: CMDResult = await self.pywershell.run(cmds, prefix=prefix, **kwargs)
         return out
 
     async def uninstall(self):
@@ -117,6 +117,7 @@ class Pywersl(AwaitLoader):
         return distro
 
     async def run(self, cmd: str | list, **kwargs) -> CMDResult | None:
+        distro: Distro = await self.distro
         prefix = kwargs.pop("prefix", None)
         log.debug(
             f"{self}: Received request:\n  - caller={get_caller_context()}\n  - prefix={prefix}\n  - kwargs={kwargs}\n  - {cmd}")
@@ -131,12 +132,12 @@ class Pywersl(AwaitLoader):
             full.append(item)
         log.debug(
             f"{self}: Sent request:\n  - receiver={self.distro}\n  - prefix={prefix}\n  - kwargs={kwargs}\n  - {cmd}")
-        out = await self.distro.run(full, **kwargs)
+        out = distro.run(full, **kwargs)
         return out
 
 
 # Globally exposed alias
-pywersl = Pywersl.get("Debian")
+pywersl: Pywersl = Pywersl.get("Debian")
 
 
 async def debug():

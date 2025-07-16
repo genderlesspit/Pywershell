@@ -1,6 +1,6 @@
 import asyncio
 
-from .gowershell import Response, Gowershell
+from gowershell import Response, Gowershell
 
 CMDResult = Response
 PywershellLive = Gowershell

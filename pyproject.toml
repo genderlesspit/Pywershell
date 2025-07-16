@@ -14,12 +14,13 @@ requires-python = ">=3.8"
 dependencies = [
   "async-property",
   "propcache",
-  "loguru"
+  "loguru",
+  "asyncinit"
 ]
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["pywershell"]
+include = ["gowershell*"]
 
 [tool.setuptools.package-data]
-pywershell = ["pywershell.ps1"]
+gowershell = ["*"]

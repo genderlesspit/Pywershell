@@ -79,6 +79,6 @@ class Debian(Pywersl):
         raise RuntimeWarning("{self}: Could not uninstall!")
 
 
-async def preload():
-    log.info(f"Attempting to preload Debian...")
-    _ = await Debian()
+# async def preload():
+#     log.info(f"Attempting to preload Debian...")
+#     _ = await Debian()

@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: pywershell
-Version: 0.2.1
+Version: 0.2.3
 Summary: Async PowerShell wrapper for Python
 Author: genderlessput
 License: # LICENSE
@@ -24,6 +24,7 @@ Requires-Dist: async-property
 Requires-Dist: propcache
 Requires-Dist: loguru
 Requires-Dist: asyncinit
+Requires-Dist: gowershell>=0.1.0
 Dynamic: license-file
 
 <!-- README.md -->

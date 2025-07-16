@@ -2,4 +2,4 @@ async-property
 propcache
 loguru
 asyncinit
-gowershell>=0.1.0
+gowershell>=0.1.1

@@ -1,6 +1,6 @@
 [project]
 name = "pywershell"
-version = "0.2.3"
+version = "0.2.4"
 description = "Async PowerShell wrapper for Python"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -11,5 +11,5 @@ dependencies = [
   "propcache",
   "loguru",
   "asyncinit",
-  "gowershell>=0.1.0"
+  "gowershell>=0.1.1"
 ]

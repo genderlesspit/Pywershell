@@ -7,6 +7,6 @@ PywershellLive = Gowershell
 
 from .pywersl import Debian#, preload
 
-# Debian = asyncio.run(preload())
 Pywersl = Debian
-Pywersl.distro = Debian
+
+Pywersl()

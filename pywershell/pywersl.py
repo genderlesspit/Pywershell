@@ -1,38 +1,45 @@
 from typing import List
+from functools import cached_property
 
-from async_property import AwaitLoader, async_cached_property
-from asyncinit import asyncinit
 from loguru import logger as log
 from singleton_decorator import singleton
-from pywershell import Gowershell, Response
 
+from gowershell import Gowershell, Response
 
-class Pywersl(AwaitLoader):
+class Pywersl:
     """
     Pywershell Windows System for Linux
     """
     PREFIX = "wsl"
 
-    @async_cached_property
-    async def version(self):
+    @cached_property
+    def version(self):
         # key = "wslinit"
         # cmd = " ".join(["echo", key])
-        resp: Response = await Gowershell.execute("wsl --version")
+        resp: Response = Gowershell().execute("wsl --version")
         ver = resp.output.splitlines()
         wsl_vers: str = ver[0]
         item = f"{wsl_vers}"
-        if not item in wsl_vers: raise RuntimeError
+        if not item in wsl_vers:
+            raise RuntimeError
         wsl_vers_num: str = wsl_vers.replace("WSL version: ", "")
         log.success(f"{self}: Running WSL Version: {wsl_vers_num}")
         return wsl_vers_num
 
-    async def run(self, cmd: str | list, headless: bool = True) -> Response | List[Response]:
-        if isinstance(cmd, str): cmd = [cmd]
+    def run(self, cmd: str | list, headless: bool = True, verbose: bool = None) -> Response | List[Response]:
+        if isinstance(cmd, str):
+            cmd = [cmd]
         resps: [Response] = []
-        for cmd in cmd:
-            resp = await Gowershell.execute(f"{self.PREFIX} {cmd}", headless=headless, persist_window=False)
+        for command in cmd:
+            resp = Gowershell().execute(
+                f"{self.PREFIX} {command}",
+                headless=headless,
+                persist_window=False,
+                verbose=verbose
+            )
             resps.append(resp)
-            log.debug(resp)
+            if verbose is None or verbose:
+                log.debug(resp)
         if len(resps) == 1:
             return resps[0]
         else:
@@ -40,7 +47,6 @@ class Pywersl(AwaitLoader):
 
 
 @singleton
-@asyncinit
 class Debian(Pywersl):
     CHECK = "--list --quiet"
     INSTALL = "--install Debian"
@@ -54,31 +60,27 @@ class Debian(Pywersl):
     ]
     UNINSTALL = ["--unregister Debian"]
 
-    async def __init__(self):
-        await self.setup
+    def __init__(self):
+        self.setup  # Trigger setup property
         self.PREFIX = "wsl -d Debian -u root -- bash -c"
 
     def __repr__(self):
         return f"[Pywersl.Debian]"
 
-    @async_cached_property
-    async def setup(self):
-        resp = await self.run(self.CHECK)
+    @cached_property
+    def setup(self):
+        resp = self.run(self.CHECK)
         out = resp.output
         if "Debian" in out:
             log.success(f"{self}: Successfully initialized Debian!")
         else:
-            await self.run(self.INSTALL, headless=False)
-            await self.run(self.POST_INSTALL)
+            self.run(self.INSTALL, headless=False)
+            self.run(self.POST_INSTALL)
+        return True
 
-    async def uninstall(self):
-        out = await self.run(self.UNINSTALL)
+    def uninstall(self):
+        out = self.run(self.UNINSTALL)
         if "The operation completed successfully." in out.str:
             log.warning(f"{self}: Successfully uninstalled!")
             return
-        raise RuntimeWarning("{self}: Could not uninstall!")
-
-
-# async def preload():
-#     log.info(f"Attempting to preload Debian...")
-#     _ = await Debian()
+        raise RuntimeWarning(f"{self}: Could not uninstall!")

@@ -1,6 +1,6 @@
 [project]
 name = "pywershell"
-version = "0.2.4"
+version = "0.3"
 description = "Async PowerShell wrapper for Python"
 readme = "README.md"
 license = { file = "LICENSE" }
